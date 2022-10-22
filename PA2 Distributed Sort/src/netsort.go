@@ -143,12 +143,14 @@ func itemPrint(itemByServer map[int][][]byte, numberOfServer int) {
 func consolidateServerData(currList []byte, ch <-chan []byte, numberOfServer int) []byte {
 	numberOfCompleted := 0
 	consolidated := make([]byte, 0)
-	for numberOfServer != numberOfCompleted {
+	for numberOfCompleted < len(currList)+1000 {
 
 		data := <-ch // receive data from channel
+		fmt.Printf("data length : %d \n", len(data))
 		currList = append(currList, data...)
 		consolidated = sortByte(currList)
-		numberOfCompleted += 1
+		fmt.Printf("curr : %d , dest : %d, goal : %d \n", numberOfCompleted, len(currList), len(currList)-numberOfCompleted)
+		numberOfCompleted += 1000
 	}
 
 	return consolidated

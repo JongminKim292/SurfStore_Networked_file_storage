@@ -859,4 +859,172 @@ handleConnection executed
 Client 127.0.0.1:55694 connected.
 handleConnection executed
 handleConnection executed
-final output : 1700final output : 600final output : 1000final output : 700
+final output : 1700final output : 600final output : 1000final output : 700My server Id: 3
+My server Id: 2
+My server Id: 1
+My server Id: 0
+Got the following server configs: {[{0 localhost 8080} {1 localhost 8081} {2 localhost 8082} {3 localhost 8083}]}
+Got the following server configs: {[{0 localhost 8080} {1 localhost 8081} {2 localhost 8082} {3 localhost 8083}]}
+Got the following server configs: {[{0 localhost 8080} {1 localhost 8081} {2 localhost 8082} {3 localhost 8083}]}
+Got the following server configs: {[{0 localhost 8080} {1 localhost 8081} {2 localhost 8082} {3 localhost 8083}]}
+#######################################
+#######################################
+3
+#######################################
+4
+#######################################
+2
+4
+Starting tcp server on connHost: localhost, connPort: 8081
+Starting tcp server on connHost: localhost, connPort: 8082
+Starting tcp server on connHost: localhost, connPort: 8080
+Starting tcp server on connHost: localhost, connPort: 8083
+Sending data for 0
+Sending data for 0
+Sending data for 0
+Client 127.0.0.1:55760 connected.
+Client 127.0.0.1:55761 connected.
+handleConnection executed
+Client 127.0.0.1:55759 connected.
+handleConnection executed
+handleConnection executed
+Sending data for 1
+Sending data for 1
+Sending data for 1
+Client 127.0.0.1:55763 connected.
+Client 127.0.0.1:55762 connected.
+Client 127.0.0.1:55764 connected.
+handleConnection executed
+handleConnection executed
+handleConnection executed
+Sending data for 2
+Sending data for 2
+Sending data for 2
+Client 127.0.0.1:55765 connected.
+Client 127.0.0.1:55766 connected.
+Client 127.0.0.1:55767 connected.
+handleConnection executed
+handleConnection executed
+handleConnection executed
+Sending data for 3
+Sending data for 3
+Sending data for 3
+Client 127.0.0.1:55768 connected.
+Client 127.0.0.1:55769 connected.
+handleConnection executed
+Client 127.0.0.1:55770 connected.
+handleConnection executed
+handleConnection executed
+final output : 1100final output : 1100final output : 900final output : 900My server Id: 2
+My server Id: 0
+My server Id: 3
+My server Id: 1
+Got the following server configs: {[{0 localhost 8080} {1 localhost 8081} {2 localhost 8082} {3 localhost 8083}]}
+Got the following server configs: {[{0 localhost 8080} {1 localhost 8081} {2 localhost 8082} {3 localhost 8083}]}
+Got the following server configs: {[{0 localhost 8080} {1 localhost 8081} {2 localhost 8082} {3 localhost 8083}]}
+Got the following server configs: {[{0 localhost 8080} {1 localhost 8081} {2 localhost 8082} {3 localhost 8083}]}
+#######################################
+2631
+Starting tcp server on connHost: localhost, connPort: 8080
+#######################################
+#######################################
+#######################################
+2647
+2665
+Starting tcp server on connHost: localhost, connPort: 8082
+2531
+Starting tcp server on connHost: localhost, connPort: 8083
+Starting tcp server on connHost: localhost, connPort: 8081
+Sending data for 0
+Sending data for 0
+Sending data for 0
+Client 127.0.0.1:56452 connected.
+Client 127.0.0.1:56451 connected.
+handleConnection executed
+handleConnection executed
+Client 127.0.0.1:56453 connected.
+handleConnection executed
+Sending data for 1
+Sending data for 1
+Sending data for 1
+Client 127.0.0.1:56455 connected.
+Client 127.0.0.1:56454 connected.
+Client 127.0.0.1:56456 connected.
+handleConnection executed
+handleConnection executed
+handleConnection executed
+Sending data for 2
+Sending data for 2
+Sending data for 2
+Client 127.0.0.1:56457 connected.
+Client 127.0.0.1:56458 connected.
+handleConnection executed
+handleConnection executed
+Client 127.0.0.1:56459 connected.
+handleConnection executed
+Sending data for 3
+Sending data for 3
+Sending data for 3
+Client 127.0.0.1:56460 connected.
+Client 127.0.0.1:56461 connected.
+Client 127.0.0.1:56462 connected.
+handleConnection executed
+handleConnection executed
+handleConnection executed
+final output : 282500final output : 269100final output : 279100final output : 280700My server Id: 1
+My server Id: 2
+My server Id: 3
+My server Id: 0
+Got the following server configs: {[{0 localhost 8080} {1 localhost 8081} {2 localhost 8082} {3 localhost 8083}]}
+Got the following server configs: {[{0 localhost 8080} {1 localhost 8081} {2 localhost 8082} {3 localhost 8083}]}
+Got the following server configs: {[{0 localhost 8080} {1 localhost 8081} {2 localhost 8082} {3 localhost 8083}]}
+Got the following server configs: {[{0 localhost 8080} {1 localhost 8081} {2 localhost 8082} {3 localhost 8083}]}
+#######################################
+#######################################
+2631
+2647
+#######################################
+#######################################
+2665
+2531
+Starting tcp server on connHost: localhost, connPort: 8082
+Starting tcp server on connHost: localhost, connPort: 8081
+Starting tcp server on connHost: localhost, connPort: 8080
+Starting tcp server on connHost: localhost, connPort: 8083
+Sending data for 0
+Sending data for 0
+Sending data for 0
+Client 127.0.0.1:56552 connected.
+Client 127.0.0.1:56553 connected.
+Client 127.0.0.1:56554 connected.
+handleConnection executed
+handleConnection executed
+handleConnection executed
+Sending data for 1
+Sending data for 1
+Sending data for 1
+Client 127.0.0.1:56557 connected.
+Client 127.0.0.1:56558 connected.
+handleConnection executed
+handleConnection executed
+Client 127.0.0.1:56559 connected.
+handleConnection executed
+Sending data for 2
+Sending data for 2
+Sending data for 2
+Client 127.0.0.1:56560 connected.
+Client 127.0.0.1:56561 connected.
+handleConnection executed
+handleConnection executed
+Client 127.0.0.1:56562 connected.
+handleConnection executed
+Sending data for 3
+Sending data for 3
+Sending data for 3
+Client 127.0.0.1:56563 connected.
+Client 127.0.0.1:56564 connected.
+handleConnection executed
+handleConnection executed
+Client 127.0.0.1:56565 connected.
+handleConnection executed
+final output : 282500final output : 269100final output : 280700final output : 279100
