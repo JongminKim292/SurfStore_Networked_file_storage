@@ -104,28 +104,27 @@ func sendData(thisServerByte [][]byte, host string, port string, serverNum int) 
 		total = append(total, thisServerByte[i][1:101]...)
 	}
 
-	for {
-		_, err = client.Write(total)
-		errorCheck(err, "write data error")
-	}
-
-	// fmt.Printf("here sent servuer %d length %d of data\n", serverNum, len(total))
-	//client.Close()
-
+	_, err = client.Write(total)
+	errorCheck(err, "write data error")
+	fmt.Printf("here sent server %d length %d of data\n", serverNum, len(total))
 }
 
 func handleConnection(conn net.Conn, ch chan<- []byte, serverNum int) {
 	fmt.Println("handleConnection executed")
-	buf := make([]byte, 4000)
+	buf := make([]byte, 100)
+	dataFromClient := make([]byte, 0)
 	for {
 		bytes, err := conn.Read(buf)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Conn::Read: err %v at server : %d\n", err, serverNum)
-			os.Exit(1)
+			break
 		}
-		dataFromClient := buf[0:bytes]
-		ch <- dataFromClient
+		dataFromClient = append(dataFromClient, buf[0:bytes]...)
+		fmt.Println(len(dataFromClient))
 	}
+	ch <- dataFromClient
+	fmt.Println("READ end", serverNum)
+	fmt.Print(ch)
 }
 
 func itemPrint(itemByServer map[int][][]byte, numberOfServer int) {
@@ -141,18 +140,19 @@ func itemPrint(itemByServer map[int][][]byte, numberOfServer int) {
 }
 
 func consolidateServerData(currList []byte, ch <-chan []byte, numberOfServer int) []byte {
-	numberOfCompleted := 0
+	numSerCom := 0
 	consolidated := make([]byte, 0)
-	for numberOfCompleted < len(currList)+1000 {
-
+	for {
+		if numSerCom == numberOfServer-1 {
+			break
+		}
 		data := <-ch // receive data from channel
-		fmt.Printf("data length : %d \n", len(data))
 		currList = append(currList, data...)
 		consolidated = sortByte(currList)
-		fmt.Printf("curr : %d , dest : %d, goal : %d \n", numberOfCompleted, len(currList), len(currList)-numberOfCompleted)
-		numberOfCompleted += 1000
+		numSerCom += 1
+		fmt.Println("curr : ", numberOfServer, numSerCom)
 	}
-
+	fmt.Printf("Client disconnected \n")
 	return consolidated
 }
 
@@ -235,12 +235,7 @@ func main() {
 	}
 
 	consolidated := consolidateServerData(curr, ch, numberOfServer)
-
-	time.Sleep(5 * time.Second)
-
 	err = ioutil.WriteFile(os.Args[3], consolidated, 0)
 	errorCheck(err, "write error")
-	time.Sleep(5 * time.Second)
-
 	fmt.Printf("final output : %d", len(consolidated))
 }
