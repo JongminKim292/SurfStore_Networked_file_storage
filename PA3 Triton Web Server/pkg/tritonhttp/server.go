@@ -63,6 +63,7 @@ func (s *Server) HandleConnection(conn net.Conn) {
 
 		// Try to read next request
 		req, isRead, err := ReadRequest(br)
+
 		if isRead {
 			fmt.Println("Byte is read")
 		}

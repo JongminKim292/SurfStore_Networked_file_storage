@@ -37,6 +37,7 @@ func ReadRequest(br *bufio.Reader) (req *Request, bytesReceived bool, err error)
 
 	// Read start line
 	req.Header = make(map[string]string)
+	req.Proto = "HTTP/1.1"
 	line, err := ReadLine(br)
 	if err != nil {
 		bytesReceived = false
@@ -69,27 +70,29 @@ func ReadRequest(br *bufio.Reader) (req *Request, bytesReceived bool, err error)
 		key := line[:idx]
 		value := line[idx+1:]
 		value = strings.TrimLeft(value, " ")
-		req.Header[key] = value
+		if key == "Host" {
+			req.Host = value
+		} else if key == "Connection" {
+			if strings.ToLower(value) == "close" {
+				fmt.Println("connection is close")
+				req.Close = true
+			} else {
+				fmt.Println("connection is not close")
+				req.Close = false
+			}
+		} else {
+			req.Header[key] = value
+		}
+
 	}
 
 	// Check required host
-	if _, exists := req.Header["Host"]; !exists {
+	if req.Host == "" {
 		bytesReceived = true
 		return nil, bytesReceived, err
-	} else {
-		req.Host = req.Header["Host"]
 	}
 
 	// Handle special headers
-	if _, exists := req.Header["Connection"]; exists {
-		if strings.ToLower(req.Header["Connection"]) == "close" {
-			fmt.Println("connection is close")
-			req.Close = true
-		} else {
-			fmt.Println("connection is not close")
-			req.Close = false
-		}
-	}
 
 	fmt.Println("Request successfully sent")
 	fmt.Println(req)

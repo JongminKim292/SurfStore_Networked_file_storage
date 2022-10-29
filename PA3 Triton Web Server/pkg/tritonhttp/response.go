@@ -85,6 +85,7 @@ func (res *Response) WriteSortedHeaders(w io.Writer) error {
 	for _, k := range keys {
 		input += k + ": " + res.Header[k] + "\r\n"
 	}
+	input += "\r\n"
 	if _, err := bw.WriteString(input); err != nil {
 		return err
 	}
