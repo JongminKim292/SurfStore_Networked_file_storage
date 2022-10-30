@@ -25,8 +25,6 @@ type Server struct {
 // ListenAndServe listens on the TCP network address s.Addr and then
 // handles requests on incoming connections.
 func (s *Server) ListenAndServe() error {
-	fmt.Println("hi server started")
-
 	if err := s.ValidateServerSetup(); err != nil {
 		return fmt.Errorf("server is not set up")
 	}
@@ -52,7 +50,6 @@ func (s *Server) ListenAndServe() error {
 func (s *Server) HandleConnection(conn net.Conn) {
 	br := bufio.NewReader(conn)
 	// Hint: use the other methods below
-	fmt.Println("Server connected")
 	for {
 		// Set timeout
 		if err := conn.SetReadDeadline(time.Now().Add(5 * time.Second)); err != nil {
@@ -60,23 +57,28 @@ func (s *Server) HandleConnection(conn net.Conn) {
 			_ = conn.Close()
 			return
 		}
-
 		// Try to read next request
 		req, isRead, err := ReadRequest(br)
-
-		if isRead {
-			fmt.Println("Byte is read")
-		}
+		// if req != nil {
+		// 	fmt.Println("Here is Request")
+		// 	fmt.Println("Method : ", req.Method)
+		// 	fmt.Println("URL : ", req.URL)
+		// 	fmt.Println("Proto : ", req.Proto)
+		// 	fmt.Println("Header : ", req.Header)
+		// 	fmt.Println("Host : ", req.Host)
+		// 	fmt.Println("Close : ", req.Close)
+		// 	fmt.Println("any byte is read?", isRead)
+		// }
 
 		// Handle EOF
-		if errors.Is(err, io.EOF) {
+		if errors.Is(err, io.EOF) && !isRead {
 			fmt.Println("EOF")
 			_ = conn.Close()
 			return
 		}
 
 		// Handle timeout
-		if err, ok := err.(net.Error); ok && err.Timeout() && !isRead {
+		if err, ok := err.(net.Error); ok && err.Timeout() && isRead {
 			fmt.Println("Timeout, conn closed")
 			_ = conn.Close()
 			return
@@ -84,7 +86,6 @@ func (s *Server) HandleConnection(conn net.Conn) {
 
 		// Handle bad request
 		if req == nil {
-			log.Printf("handle bad request for error: %v", err)
 			res := &Response{}
 			res.HandleBadRequest()
 			_ = res.Write(conn)
@@ -101,7 +102,6 @@ func (s *Server) HandleConnection(conn net.Conn) {
 
 		// Close conn if requested/
 		if req.Close {
-			fmt.Println("system requested connection close")
 			conn.Close()
 			return
 		}
@@ -112,11 +112,10 @@ func (s *Server) HandleConnection(conn net.Conn) {
 // HandleGoodRequest handles the valid req and generates the corresponding res.
 func (s *Server) HandleGoodRequest(req *Request) (res *Response) {
 	// Hint: use the other methods below
-	fmt.Println("it seems good request 200")
 	res = &Response{}
 	res.Header = make(map[string]string)
 	file, err := os.Stat(filepath.Join(s.DocRoot, req.URL))
-	if os.IsNotExist(err) {
+	if os.IsNotExist(err) || file == nil {
 		res.HandleNotFound(req)
 	} else {
 		res.FilePath = filepath.Join(s.DocRoot, req.URL)
@@ -143,7 +142,6 @@ func (res *Response) HandleOK(req *Request, path string) {
 // ready to be written back to client.
 
 func (res *Response) HandleBadRequest() {
-	fmt.Println("it seems bad request 400")
 	res.Header = make(map[string]string)
 	res.Proto = "HTTP/1.1"
 	res.StatusCode = 400
@@ -155,7 +153,7 @@ func (res *Response) HandleBadRequest() {
 // HandleNotFound prepares res to be a 404 Not Found response
 // ready to be written back to client.
 func (res *Response) HandleNotFound(req *Request) {
-	fmt.Println("it seems bad request 404")
+	fmt.Println("file does not exist")
 	res.Header = make(map[string]string)
 	res.Proto = "HTTP/1.1"
 	res.StatusCode = 404

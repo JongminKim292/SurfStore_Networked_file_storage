@@ -37,15 +37,20 @@ func ReadRequest(br *bufio.Reader) (req *Request, bytesReceived bool, err error)
 
 	// Read start line
 	req.Header = make(map[string]string)
-	req.Proto = "HTTP/1.1"
 	line, err := ReadLine(br)
 	if err != nil {
 		bytesReceived = false
 		return nil, bytesReceived, err
 	}
 
-	req.Method, req.URL, err = parseRequestLine(line)
-	req.URL = filepath.Clean(req.URL)
+	req.Method, req.URL, req.Proto, err = parseRequestLine(line)
+	newURL, urlIsValid := validURL(req.URL)
+	req.URL = newURL
+	if !urlIsValid {
+		bytesReceived = false
+		return nil, bytesReceived, badStringError("URL is not valid", req.URL)
+	}
+
 	if err != nil {
 		bytesReceived = false
 		return nil, bytesReceived, badStringError("malformed start line", line)
@@ -55,30 +60,37 @@ func ReadRequest(br *bufio.Reader) (req *Request, bytesReceived bool, err error)
 		bytesReceived = false
 		return nil, bytesReceived, badStringError("invalid method", req.Method)
 	}
+	if !validProto(req.Proto) {
+		bytesReceived = false
+		return nil, bytesReceived, badStringError("invalid Proto", req.Proto)
+	}
+	bytesReceived = true
 
 	for {
 		line, err := ReadLine(br)
 		if err != nil {
-			bytesReceived = false
-			return nil, bytesReceived, err
+			fmt.Printf("%v err", err)
 		}
-
 		if line == "" { // in case header end
+			fmt.Println("head reached endline break")
 			break
 		}
+
 		idx := strings.Index(line, ":")
-		key := line[:idx]
+		if idx == -1 {
+			return nil, bytesReceived, badStringError("invalid header", line)
+		}
+		key := CanonicalHeaderKey(line[:idx])
 		value := line[idx+1:]
 		value = strings.TrimLeft(value, " ")
 		if key == "Host" {
 			req.Host = value
 		} else if key == "Connection" {
 			if strings.ToLower(value) == "close" {
-				fmt.Println("connection is close")
 				req.Close = true
 			} else {
-				fmt.Println("connection is not close")
-				req.Close = false
+				fmt.Println("invalid connection argument ~ bye")
+				return nil, bytesReceived, badStringError("invalid close header", line)
 			}
 		} else {
 			req.Header[key] = value
@@ -89,22 +101,22 @@ func ReadRequest(br *bufio.Reader) (req *Request, bytesReceived bool, err error)
 	// Check required host
 	if req.Host == "" {
 		bytesReceived = true
+		fmt.Println("req.Host has error")
 		return nil, bytesReceived, err
 	}
 
 	// Handle special headers
 
 	fmt.Println("Request successfully sent")
-	fmt.Println(req)
 	return req, true, nil
 }
 
-func parseRequestLine(line string) (string, string, error) {
+func parseRequestLine(line string) (string, string, string, error) {
 	fields := strings.SplitN(line, " ", 3)
 	if len(fields) != 3 {
-		return "", "", fmt.Errorf("could not parse the request line, got fields %v", fields)
+		return "", "", "", fmt.Errorf("could not parse the request line, got fields %v", fields)
 	}
-	return fields[0], fields[1], nil
+	return fields[0], fields[1], fields[2], nil
 }
 
 func badStringError(what, val string) error {
@@ -126,4 +138,23 @@ func (s *Server) ValidateServerSetup() error {
 
 func validMethod(method string) bool {
 	return method == "GET"
+}
+func validProto(proto string) bool {
+	return proto == "HTTP/1.1"
+}
+func validURL(URL string) (string, bool) {
+	if len(URL) < 1 {
+		return "", false
+	}
+	redirectedURL := URL
+	firstCharacter := URL[0:1]
+	lastCharacter := URL[len(URL)-1:]
+	if firstCharacter != "/" {
+		return "", false
+	} else {
+		if lastCharacter == "/" {
+			redirectedURL = URL + "index.html"
+		}
+	}
+	return filepath.Clean(redirectedURL), true
 }

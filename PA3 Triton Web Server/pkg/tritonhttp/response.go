@@ -46,9 +46,7 @@ func (res *Response) Write(w io.Writer) error {
 // WriteStatusLine writes the status line of res to w, including the ending "\r\n".
 // For example, it could write "HTTP/1.1 200 OK\r\n".
 func (res *Response) WriteStatusLine(w io.Writer) error {
-	fmt.Println()
 	bw := bufio.NewWriter(w)
-	fmt.Println("write statusLine start")
 	item := ""
 	if res.StatusCode == 200 {
 		item = "OK"
@@ -72,7 +70,6 @@ func (res *Response) WriteStatusLine(w io.Writer) error {
 // For HTTP, there is no need to write headers in any particular order.
 // TritonHTTP requires to write in sorted order for the ease of testing.
 func (res *Response) WriteSortedHeaders(w io.Writer) error {
-	fmt.Println("sortedHeader write start")
 	bw := bufio.NewWriter(w)
 	input := ""
 	keys := make([]string, 0, len(res.Header))
@@ -92,7 +89,6 @@ func (res *Response) WriteSortedHeaders(w io.Writer) error {
 	if err := bw.Flush(); err != nil {
 		return err
 	}
-	fmt.Println("write done")
 
 	return nil
 }
@@ -100,7 +96,6 @@ func (res *Response) WriteSortedHeaders(w io.Writer) error {
 // WriteBody writes res' file content as the response body to w.
 // It doesn't write anything if there is no file to serve.
 func (res *Response) WriteBody(w io.Writer) error {
-	fmt.Println("body wirte started")
 	if res.StatusCode != 200 {
 		return nil
 	}
