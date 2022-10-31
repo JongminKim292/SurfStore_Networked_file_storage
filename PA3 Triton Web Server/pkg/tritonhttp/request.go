@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -44,9 +43,8 @@ func ReadRequest(br *bufio.Reader) (req *Request, bytesReceived bool, err error)
 	}
 
 	req.Method, req.URL, req.Proto, err = parseRequestLine(line)
-	newURL, urlIsValid := validURL(req.URL)
-	req.URL = newURL
-	if !urlIsValid {
+
+	if !validURL(req.URL) {
 		bytesReceived = false
 		return nil, bytesReceived, badStringError("URL is not valid", req.URL)
 	}
@@ -60,37 +58,39 @@ func ReadRequest(br *bufio.Reader) (req *Request, bytesReceived bool, err error)
 		bytesReceived = false
 		return nil, bytesReceived, badStringError("invalid method", req.Method)
 	}
+
 	if !validProto(req.Proto) {
 		bytesReceived = false
-		return nil, bytesReceived, badStringError("invalid Proto", req.Proto)
+		return nil, bytesReceived, badStringError("invalid Proto", req.Method)
 	}
-	bytesReceived = true
 
 	for {
 		line, err := ReadLine(br)
+		fmt.Println(line)
 		if err != nil {
-			fmt.Printf("%v err", err)
-		}
-		if line == "" { // in case header end
-			fmt.Println("head reached endline break")
-			break
+			bytesReceived = false
+			return nil, bytesReceived, err
 		}
 
+		if line == "" { // in case header end
+			break
+		}
 		idx := strings.Index(line, ":")
 		if idx == -1 {
-			return nil, bytesReceived, badStringError("invalid header", line)
+			return nil, true, badStringError("invalid header", line)
 		}
-		key := CanonicalHeaderKey(line[:idx])
+		key := line[:idx]
 		value := line[idx+1:]
 		value = strings.TrimLeft(value, " ")
 		if key == "Host" {
 			req.Host = value
 		} else if key == "Connection" {
 			if strings.ToLower(value) == "close" {
+				fmt.Println("connection is close")
 				req.Close = true
 			} else {
-				fmt.Println("invalid connection argument ~ bye")
-				return nil, bytesReceived, badStringError("invalid close header", line)
+				fmt.Println("connection is not close")
+				req.Close = false
 			}
 		} else {
 			req.Header[key] = value
@@ -101,13 +101,13 @@ func ReadRequest(br *bufio.Reader) (req *Request, bytesReceived bool, err error)
 	// Check required host
 	if req.Host == "" {
 		bytesReceived = true
-		fmt.Println("req.Host has error")
 		return nil, bytesReceived, err
 	}
 
 	// Handle special headers
 
-	fmt.Println("Request successfully sent")
+	// fmt.Println("Request successfully sent")
+	// fmt.Println(req)
 	return req, true, nil
 }
 
@@ -139,22 +139,15 @@ func (s *Server) ValidateServerSetup() error {
 func validMethod(method string) bool {
 	return method == "GET"
 }
+
+func validURL(URL string) bool {
+	firstCharacter := URL[0:1]
+	if firstCharacter != "/" || len(URL) < 1 {
+		return false
+	}
+	return true
+}
+
 func validProto(proto string) bool {
 	return proto == "HTTP/1.1"
-}
-func validURL(URL string) (string, bool) {
-	if len(URL) < 1 {
-		return "", false
-	}
-	redirectedURL := URL
-	firstCharacter := URL[0:1]
-	lastCharacter := URL[len(URL)-1:]
-	if firstCharacter != "/" {
-		return "", false
-	} else {
-		if lastCharacter == "/" {
-			redirectedURL = URL + "index.html"
-		}
-	}
-	return filepath.Clean(redirectedURL), true
 }

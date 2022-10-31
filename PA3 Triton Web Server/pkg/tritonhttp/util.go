@@ -47,7 +47,6 @@ func ReadLine(br *bufio.Reader) (string, error) {
 	for {
 		s, err := br.ReadString('\n')
 		line += s
-
 		// Return the error
 		if err != nil {
 			return line, err

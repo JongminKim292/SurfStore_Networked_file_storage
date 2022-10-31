@@ -1,6 +1,7 @@
 package tritonhttp
 
 import (
+	"fmt"
 	"path/filepath"
 	"testing"
 )
@@ -40,7 +41,7 @@ func TestHandleGoodRequest(t *testing.T) {
 			"OKBasic",
 			&Request{
 				Method: "GET",
-				URL:    "/index.html",
+				URL:    "/",
 				Proto:  "HTTP/1.1",
 				Header: map[string]string{},
 				Host:   "test",
@@ -74,6 +75,7 @@ func TestHandleGoodRequest(t *testing.T) {
 			if res.StatusCode != tt.statusWant {
 				t.Fatalf("status code got: %v, want: %v", res.StatusCode, tt.statusWant)
 			}
+			fmt.Println(res)
 			for _, h := range tt.headersWant {
 				if _, ok := res.Header[h]; !ok {
 					t.Fatalf("missing header %q", h)

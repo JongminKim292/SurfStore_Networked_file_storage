@@ -57,28 +57,23 @@ func (s *Server) HandleConnection(conn net.Conn) {
 			_ = conn.Close()
 			return
 		}
+
 		// Try to read next request
 		req, isRead, err := ReadRequest(br)
-		// if req != nil {
-		// 	fmt.Println("Here is Request")
-		// 	fmt.Println("Method : ", req.Method)
-		// 	fmt.Println("URL : ", req.URL)
-		// 	fmt.Println("Proto : ", req.Proto)
-		// 	fmt.Println("Header : ", req.Header)
-		// 	fmt.Println("Host : ", req.Host)
-		// 	fmt.Println("Close : ", req.Close)
-		// 	fmt.Println("any byte is read?", isRead)
-		// }
+		fmt.Println(req.URL)
+		if isRead {
+			fmt.Println("Byte is read")
+		}
 
 		// Handle EOF
-		if errors.Is(err, io.EOF) && !isRead {
+		if errors.Is(err, io.EOF) {
 			fmt.Println("EOF")
 			_ = conn.Close()
 			return
 		}
 
 		// Handle timeout
-		if err, ok := err.(net.Error); ok && err.Timeout() && isRead {
+		if err, ok := err.(net.Error); ok && err.Timeout() && !isRead {
 			fmt.Println("Timeout, conn closed")
 			_ = conn.Close()
 			return
@@ -86,6 +81,7 @@ func (s *Server) HandleConnection(conn net.Conn) {
 
 		// Handle bad request
 		if req == nil {
+			log.Printf("handle bad request for error: %v", err)
 			res := &Response{}
 			res.HandleBadRequest()
 			_ = res.Write(conn)
@@ -102,6 +98,7 @@ func (s *Server) HandleConnection(conn net.Conn) {
 
 		// Close conn if requested/
 		if req.Close {
+			fmt.Println("system requested connection close")
 			conn.Close()
 			return
 		}
@@ -112,17 +109,21 @@ func (s *Server) HandleConnection(conn net.Conn) {
 // HandleGoodRequest handles the valid req and generates the corresponding res.
 func (s *Server) HandleGoodRequest(req *Request) (res *Response) {
 	// Hint: use the other methods below
+	fmt.Println("it seems good request 200")
 	res = &Response{}
 	res.Header = make(map[string]string)
-	file, err := os.Stat(filepath.Join(s.DocRoot, req.URL))
-	if os.IsNotExist(err) || file == nil {
+	file, err := os.Stat(filepath.Join(s.DocRoot, URLredirector(req.URL)))
+	if os.IsNotExist(err) {
 		res.HandleNotFound(req)
 	} else {
-		res.FilePath = filepath.Join(s.DocRoot, req.URL)
+		res.FilePath = filepath.Join(s.DocRoot, URLredirector(req.URL))
 		res.Header["Content-Length"] = fmt.Sprintf("%d", file.Size())
 		res.Header["Last-Modified"] = FormatTime(file.ModTime())
+		res.Header["Date"] = FormatTime(time.Now())
+		res.Header["Content-Type"] = MIMETypeByExtension(filepath.Ext(res.FilePath))
 		res.HandleOK(req, res.FilePath)
 	}
+
 	return res
 }
 
@@ -131,8 +132,6 @@ func (s *Server) HandleGoodRequest(req *Request) (res *Response) {
 func (res *Response) HandleOK(req *Request, path string) {
 	res.Proto = "HTTP/1.1"
 	res.StatusCode = 200
-	res.Header["Date"] = FormatTime(time.Now())
-	res.Header["Content-Type"] = MIMETypeByExtension(filepath.Ext(path))
 	if req.Close {
 		res.Header["Connection"] = "close"
 	}
@@ -142,6 +141,7 @@ func (res *Response) HandleOK(req *Request, path string) {
 // ready to be written back to client.
 
 func (res *Response) HandleBadRequest() {
+	fmt.Println("it seems bad request 400")
 	res.Header = make(map[string]string)
 	res.Proto = "HTTP/1.1"
 	res.StatusCode = 400
@@ -153,10 +153,18 @@ func (res *Response) HandleBadRequest() {
 // HandleNotFound prepares res to be a 404 Not Found response
 // ready to be written back to client.
 func (res *Response) HandleNotFound(req *Request) {
-	fmt.Println("file does not exist")
+	fmt.Println("it seems bad request 404")
 	res.Header = make(map[string]string)
 	res.Proto = "HTTP/1.1"
 	res.StatusCode = 404
 	res.FilePath = ""
 	res.Header["Date"] = FormatTime(time.Now())
+}
+
+func URLredirector(url string) string {
+	lastCharacter := url[len(url)-1:]
+	if lastCharacter == "/" {
+		return url + "index.html"
+	}
+	return url
 }
