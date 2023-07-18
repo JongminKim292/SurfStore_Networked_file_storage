@@ -1,7 +1,5 @@
 # Surfstore
 
-This is the starter code for Project 4: Surfstore.
-
 Before you get started, make sure you understand the following 2 things about Go. (These will also be covered in class and in discussions)
 1. Interfaces: They are named collections of method signatures. Here are some good resources to understand interfaces in Go:
     a. https://gobyexample.com/interfaces
@@ -11,7 +9,7 @@ Before you get started, make sure you understand the following 2 things about Go
 
 ## Protocol buffers
 
-The starter code defines the following protocol buffer message type in `SurfStore.proto`:
+The following protocol buffer message type in `SurfStore.proto`:
 
 ```
 message Block {
@@ -126,7 +124,7 @@ Run the commands below on separate terminals (or nodes)
 ```
 The first line starts a server that services only the BlockStore interface and listens only to localhost on port 8081. The second line starts a server that services only the MetaStore interface, listens only to localhost on port 8080, and references the BlockStore we created as the underlying BlockStore. (Note: if these are on separate nodes, then you should use the public ip address and remove `-l`)
 
-3. From a new terminal (or a new node), run the client using the script provided in the starter code (if using a new node, build using step 1 first). Use a base directory with some files in it.
+3. From a new terminal (or a new node), run the client using the script provided in the code (if using a new node, build using step 1 first). Use a base directory with some files in it.
 ```shell
 > mkdir dataA
 > cp ~/pic.jpg dataA/ 
@@ -159,6 +157,3 @@ make run-blockstore
 ```shell
 make run-metastore
 ```
-
-## Testing 
-On gradescope, only a subset of test cases will be visible, so we highly encourage you to come up with different scenarios like the one described above. You can then match the outcome of your implementation to the expected output based on the theory provided in the writeup.
