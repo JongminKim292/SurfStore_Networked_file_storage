@@ -1,6 +1,6 @@
 # SurfStore
 
-Those two components are good resources to understanding `SurfStore`
+Those two components are good resources to understand `SurfStore`
 
 1. Interfaces: They are named collections of method signatures. Here are some good resources to understand interfaces in Go:
     a. https://gobyexample.com/interfaces
