@@ -88,7 +88,7 @@ type BlockStoreInterface interface {
 `cmd/SurfstoreServerExec/main.go` also has a method `startServer`. Depending on the service type specified, it should register a `MetaStore`, `BlockStore`, or `Both` and start listening for connections from clients.
 
 ### Client
-`SurfstoreRPCClient.go` provides the gRPC client stub for the surfstore gRPC server.
+`SurfstoreRPCClient.go` provides the gRPC client for the surfstore gRPC server.
 
 `SurfstoreUtils.go` also has the following method which for the sync logic of clients:
 ```go
