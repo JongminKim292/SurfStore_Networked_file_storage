@@ -1,6 +1,7 @@
-# Surfstore
+# Surf Store
 
-Before you get started, make sure you understand the following 2 things about Go. (These will also be covered in class and in discussions)
+Those two components are good resources to understanding `Surf Store`
+
 1. Interfaces: They are named collections of method signatures. Here are some good resources to understand interfaces in Go:
     a. https://gobyexample.com/interfaces
     b. https://jordanorelli.com/post/32665860244/how-to-use-interfaces-in-go
@@ -82,21 +83,20 @@ type BlockStoreInterface interface {
 
 ## Implementation
 ### Server
-`BlockStore.go` provides a skeleton implementation of the `BlockStoreInterface` and `MetaStore.go` provides a skeleton implementation of the `MetaStoreInterface` 
-**You must implement the methods in these 2 files which have `panic("todo")` as their body.**
+`BlockStore.go` provides a implementation of the `BlockStoreInterface` and `MetaStore.go` provides a implementation of the `MetaStoreInterface` 
 
-`cmd/SurfstoreServerExec/main.go` also has a method `startServer` **which you must implement**. Depending on the service type specified, it should register a `MetaStore`, `BlockStore`, or `Both` and start listening for connections from clients.
+`cmd/SurfstoreServerExec/main.go` also has a method `startServer`. Depending on the service type specified, it should register a `MetaStore`, `BlockStore`, or `Both` and start listening for connections from clients.
 
 ### Client
-`SurfstoreRPCClient.go` provides the gRPC client stub for the surfstore gRPC server. **You must implement the methods in this file which have `panic("todo")` as their body.** (Hint: one of them has been implemented for you)
+`SurfstoreRPCClient.go` provides the gRPC client stub for the surfstore gRPC server.
 
-`SurfstoreUtils.go` also has the following method which **you need to implement** for the sync logic of clients:
+`SurfstoreUtils.go` also has the following method which for the sync logic of clients:
 ```go
 /*
 Implement the logic for a client syncing with the server here.
 */
 func ClientSync(client RPCClient) {
-	panic("todo")
+	...
 }
 ```
 ## Usage
