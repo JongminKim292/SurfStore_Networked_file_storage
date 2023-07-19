@@ -50,7 +50,7 @@ protoc --proto_path=. --go_out=. --go_opt=paths=source_relative --go-grpc_out=. 
 Running this command generates the following files in the `pkg/surfstore` directory:
 - `SurfStore.pb.go`, which contains all the protocol buffer code to populate, serialize, and retrieve request and response message types.
 - `SurfStore_grpc.pb.go`, which contains the following:
-	- An interface type (or stub) for clients to call with the methods defined in the SurfStore service.
+	- An interface type for clients to call with the methods defined in the SurfStore service.
 	- An interface type for servers to implement, also with the methods defined in the SurfStore service.
 
 ## Surfstore Interface
